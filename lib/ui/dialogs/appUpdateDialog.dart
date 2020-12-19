@@ -1,18 +1,19 @@
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
 import 'package:songtube/internal/models/updateDetails.dart';
+import 'package:songtube/screens/libraryScreen/update.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AppUpdateDialog extends StatelessWidget {
+  final String path;
   final UpdateDetails details;
-  AppUpdateDialog(this.details);
+  final String package;
+  AppUpdateDialog(this.details, this.path, this.package);
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20)
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       title: Column(
         children: [
           Row(
@@ -37,10 +38,9 @@ class AppUpdateDialog extends StatelessWidget {
               Text(
                 "SongTube",
                 style: TextStyle(
-                  color: Theme.of(context).textTheme.bodyText1.color,
-                  fontFamily: 'YTSans',
-                  fontSize: 24
-                ),
+                    color: Theme.of(context).textTheme.bodyText1.color,
+                    fontFamily: 'YTSans',
+                    fontSize: 24),
               )
             ],
           ),
@@ -50,18 +50,18 @@ class AppUpdateDialog extends StatelessWidget {
               Text(
                 "New version available",
                 style: TextStyle(
-                  color: Theme.of(context).textTheme.bodyText1.color
-                    .withOpacity(0.8),
-                  fontSize: 16
-                ),
+                    color: Theme.of(context)
+                        .textTheme
+                        .bodyText1
+                        .color
+                        .withOpacity(0.8),
+                    fontSize: 16),
               ),
               Spacer(),
               Text(
                 "${details.version}",
                 style: TextStyle(
-                  color: Theme.of(context).accentColor,
-                  fontSize: 16
-                ),
+                    color: Theme.of(context).accentColor, fontSize: 16),
               )
             ],
           ),
@@ -70,10 +70,8 @@ class AppUpdateDialog extends StatelessWidget {
             alignment: Alignment.centerLeft,
             child: Text(
               "What's new:",
-              style: TextStyle(
-                color: Theme.of(context).accentColor,
-                fontSize: 16
-              ),
+              style:
+                  TextStyle(color: Theme.of(context).accentColor, fontSize: 16),
             ),
           )
         ],
@@ -82,44 +80,48 @@ class AppUpdateDialog extends StatelessWidget {
         physics: BouncingScrollPhysics(),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: [
-            MarkdownBody(data: details.updateDetails)
-          ],
+          children: [MarkdownBody(data: details.updateDetails)],
         ),
       ),
       actions: [
         FlatButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(
-            "Later",
-            style: TextStyle(
-              color: Theme.of(context).textTheme.bodyText1.color
-                .withOpacity(0.8),
-              fontFamily: 'YTSans',
-              fontSize: 16
-            ),
-          )
-        ),
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              "Later",
+              style: TextStyle(
+                  color: Theme.of(context)
+                      .textTheme
+                      .bodyText1
+                      .color
+                      .withOpacity(0.8),
+                  fontFamily: 'YTSans',
+                  fontSize: 16),
+            )),
         InkWell(
           onTap: () {
-            launch("https://t.me/songtubechannel");
+            print("Tapped");
+            Navigator.pop(context);
+            return showDialog(
+              context: context,
+              builder: (context) => AppUpdate(
+                path: path,
+                package: package,
+              ),
+            );
+            // launch("https://t.me/songtubechannel");
           },
           child: Ink(
             height: 50,
             width: 100,
             padding: EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Theme.of(context).accentColor,
-              borderRadius: BorderRadius.circular(20)
-            ),
+                color: Theme.of(context).accentColor,
+                borderRadius: BorderRadius.circular(20)),
             child: Center(
               child: Text(
                 "Update",
                 style: TextStyle(
-                  color: Colors.white,
-                  fontFamily: 'YTSans',
-                  fontSize: 16
-                ),
+                    color: Colors.white, fontFamily: 'YTSans', fontSize: 16),
               ),
             ),
           ),
