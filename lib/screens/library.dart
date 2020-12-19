@@ -1,16 +1,19 @@
 // Flutter
 import 'package:flutter/material.dart';
 import 'package:songtube/internal/languages.dart';
+import 'package:songtube/internal/models/updateDetails.dart';
 
 // Internal
 import 'package:songtube/provider/configurationProvider.dart';
 import 'package:songtube/screens/libraryScreen/settings.dart';
 import 'package:songtube/screens/libraryScreen/components/quickAcessTile.dart';
+import 'package:songtube/internal/updateChecker.dart';
 
 // Packages
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:songtube/screens/libraryScreen/components/songtubeBanner.dart';
+import 'package:songtube/ui/dialogs/appUpdateDialog.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
 
@@ -29,12 +32,12 @@ class LibraryScreen extends StatelessWidget {
           ),
           // Settings
           QuickAccessTile(
-            tileIcon: Icon(EvaIcons.settingsOutline, color: Colors.redAccent),
-            title: Languages.of(context).labelSettings,
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsTab()));
-            }
-          ),
+              tileIcon: Icon(EvaIcons.settingsOutline, color: Colors.redAccent),
+              title: Languages.of(context).labelSettings,
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => SettingsTab()));
+              }),
           // Telegram Channel
           QuickAccessTile(
             tileIcon: Icon(MdiIcons.telegram, color: Colors.blue),
@@ -65,13 +68,28 @@ class LibraryScreen extends StatelessWidget {
             title: Languages.of(context).labelLicenses,
             onTap: () {
               showLicensePage(
-                applicationName: config.appName,
-                applicationIcon: Image.asset('assets/images/ic_launcher.png', height: 50, width: 50),
-                applicationVersion: config.appVersion,
-                context: context
-              );
+                  applicationName: config.appName,
+                  applicationIcon: Image.asset('assets/images/ic_launcher.png',
+                      height: 50, width: 50),
+                  applicationVersion: config.appVersion,
+                  context: context);
             },
-          )
+          ),
+          //Update check
+          QuickAccessTile(
+            tileIcon: Icon(
+              MdiIcons.update,
+              color: Colors.red,
+            ),
+            title: "Check for Update",
+            onTap: () async {
+              final UpdateDetails arch = await getLatestRelease();
+              showDialog(
+                  context: context,
+                  builder: (context) => AppUpdateDialog(
+                      arch, config.videoDownloadPath, config.packageName));
+            },
+          ),
         ],
       ),
     );
