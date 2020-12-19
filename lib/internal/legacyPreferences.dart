@@ -13,8 +13,8 @@ String accentKey = "app_accent_color";
 String systemThemeKey = "use_system_theme";
 String darkThemeKey = "use_dark_theme";
 String blackThemeKey = "use_black_theme";
-String enableFFmpegActionTypeion= "enable_audio_convertion";
-String enableVideoConvertion= "enable_video_convertion";
+String enableFFmpegActionTypeion = "enable_audio_convertion";
+String enableVideoConvertion = "enable_video_convertion";
 String ffmpegActionTypeingFormat = "audio_converting_format";
 String audioDownloadPath = "audio_download_path";
 String videoDownloadPath = "video_download_path";
@@ -40,7 +40,6 @@ String disclaimerKey = "disclaimer_key";
 String fixStatus = "download_fix_status";
 
 class LegacyPreferences {
-  
   SharedPreferences prefs;
 
   Future<void> initPreferences() async {
@@ -49,7 +48,9 @@ class LegacyPreferences {
     int version = deviceInfo.version.sdkInt;
     if (version >= 28) {
       isSystemThemeAvailable = true;
-    } else {isSystemThemeAvailable = false;}
+    } else {
+      isSystemThemeAvailable = false;
+    }
   }
 
   bool isSystemThemeAvailable;
@@ -74,7 +75,7 @@ class LegacyPreferences {
     return prefs.getBool(darkThemeKey) ?? false;
   }
 
-  void saveDarkThemeEnabled(bool value){
+  void saveDarkThemeEnabled(bool value) {
     prefs.setBool(darkThemeKey, value);
   }
 
@@ -154,6 +155,7 @@ class LegacyPreferences {
   String getSearchHistory() {
     return prefs.getString(searchHistory) ?? "[]";
   }
+
   void saveSearchHistory(String history) {
     prefs.setString(searchHistory, history);
   }
@@ -162,6 +164,7 @@ class LegacyPreferences {
   String getChannelLogos() {
     return prefs.getString(channelLogo) ?? "{}";
   }
+
   void saveChannelLogos(String json) {
     prefs.setString(channelLogo, json);
   }
@@ -173,12 +176,15 @@ class LegacyPreferences {
   bool getExpandedArtwork() {
     return prefs.getBool(expandedArtwork) ?? true;
   }
+
   void saveExpandedArtwork(bool value) {
     prefs.setBool(expandedArtwork, value);
   }
+
   bool getBlurBackground() {
     return prefs.getBool(blurBackground) ?? true;
   }
+
   void saveBlurBackground(bool value) {
     prefs.setBool(blurBackground, value);
   }
@@ -187,6 +193,7 @@ class LegacyPreferences {
   bool getDisclaimerStatus() {
     return prefs.getBool(disclaimerKey) ?? false;
   }
+
   void saveDisclaimerStatus(bool value) {
     prefs.setBool(disclaimerKey, value);
   }
@@ -195,6 +202,7 @@ class LegacyPreferences {
   bool getShowDownloadFixDialog() {
     return prefs.getBool(fixStatus) ?? true;
   }
+
   void saveShowDownloadFixDialog(bool value) {
     prefs.setBool(fixStatus, value);
   }
