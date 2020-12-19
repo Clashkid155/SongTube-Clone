@@ -144,7 +144,7 @@ class _LibState extends State<Lib> {
         double appVersion =
             double.parse(android.version.replaceRange(3, 5, ""));
         getLatestRelease().then((details) {
-          if (appVersion == details.version) {
+          if (appVersion < details.version) {
             // Show the user an Update is available
             showDialog(
                 context: context,
