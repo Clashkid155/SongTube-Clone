@@ -1,3 +1,4 @@
+import com.android.build.OutputFile
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
@@ -33,13 +34,14 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     compileSdkVersion 30
+    project.archivesBaseName = "SongTube"
 
     lintOptions {
         disable 'InvalidPackage'
     }
 
     defaultConfig {
-        applicationId "com.artxdev.songtube"
+        applicationId "com.artxdev.songtube.clashkid155"
         minSdkVersion 22
         targetSdkVersion 28
         versionCode flutterVersionCode.toInteger()
@@ -56,11 +58,28 @@ android {
             storePassword keystoreProperties['storePassword']
         }
     }
-    
+
     buildTypes {
         release {
+            
+            // Sign with my keys
             signingConfig signingConfigs.release
             shrinkResources false
+           
+            applicationVariants.all { variant ->
+                variant.outputs.all { output ->
+                    
+                     def buildtype = variant.variantData.variantConfiguration.buildType.name
+                    
+                    def abii = output.getFilter(OutputFile.ABI)
+                    if (abii != null) { 
+                        outputFileName = "SongTube-${abii}-${buildtype}.${defaultConfig.versionName}.apk";
+
+                    } else{
+                        outputFileName = "SongTube-${buildtype}.${defaultConfig.versionName}.apk";
+                    } 
+             }
+             }
         }
         debug{
             applicationIdSuffix ".dev"

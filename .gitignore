@@ -39,3 +39,4 @@ lib/generated_plugin_registrant.dart
 # Signing
 songtube.jks
 key.properties
+key.jks
