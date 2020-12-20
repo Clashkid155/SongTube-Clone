@@ -1,0 +1,68 @@
+name: Dart
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    # Note that this workflow uses the latest stable version of the Dart SDK.
+    # Docker images for other release channels - like dev and beta - are also
+    # available. See https://hub.docker.com/r/google/dart/ for the available
+    # images.
+    #container:
+     # image:  google/dart:latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Print Dart SDK version
+        run: dart --version
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '12.x'
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: 'stable' # or: 'beta' or 'dev'
+      - name: Get Package  
+        run: flutter pub get
+      #- run: flutter test
+      - name: Build Apk
+        run: flutter build apk --split-per-abi
+       
+      - name: Android Keys
+        run: |
+            gpg --quiet --batch --yes --decrypt --passphrase=${{ secrets.KEY_SIGN }} \
+            --output android/android.zip android/android.zip.gpg && jar xvf android.zip && cd -
+       
+      # Parse changelog
+      - name: changelog
+        id: chan
+        run: |
+            python changeparse.py
+        
+        # Create release note
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: SongTube ${{ github.ref }}
+          body: $BODY   
+      # Upload files  
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} 
+          asset_path: build/app/outputs/apk/release/SongTube*
+         # asset_name: my-artifact.zip
+          asset_content_type: application/vnd.android.package-archive
