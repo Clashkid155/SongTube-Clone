@@ -19,9 +19,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
-      - name: Print Dart SDK version
-        run: dart --version
       - uses: actions/setup-java@v1
         with:
           java-version: '12.x'
