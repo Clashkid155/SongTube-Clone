@@ -40,10 +40,10 @@ jobs:
         run: flutter build apk --split-per-abi
        
       # Parse changelog
-      - name: changelog
+      - name: Changelog
         id: chan
         run: |
-            python changeprase.py
+            python3 changeprase.py
         
         # Create release note
       - name: Create Release
