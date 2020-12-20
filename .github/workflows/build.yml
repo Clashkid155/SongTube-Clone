@@ -43,7 +43,7 @@ jobs:
       - name: changelog
         id: chan
         run: |
-            python changeparse.py
+            python changeprase.py
         
         # Create release note
       - name: Create Release
