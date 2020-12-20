@@ -11,5 +11,6 @@ with open("changelog.md", "r") as file:
             fake.append(i)
 #           print(i, end="")
     body = body.join(fake)
-    print(f"::set-env name=BODY::{body}")
-
+    # Deprecated
+    #print(f"::set-env name=BODY::{body}")
+    print(f"BODY={body} >> $GITHUB_ENV")
