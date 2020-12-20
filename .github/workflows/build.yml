@@ -44,8 +44,8 @@ jobs:
       - name: Get Package  
         run: flutter pub get
       #- run: flutter test
-      - name: Build Apk per abi
-        run: flutter build apk --split-per-abi
+     # - name: Build Apk per abi
+       # run: flutter build apk --split-per-abi
       - name: Build fat apk
         run: flutter build apk
        
@@ -70,13 +70,12 @@ jobs:
           
        
        # Telegram 
-      - uses: actions/checkout@master
       - name: send photo message
         uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
-          message: Just a message. ${{ github.event_name }}
+          args: Just a message. ${{ github.event_name }}
           document: build/app/outputs/apk/release/SongTube*
       
         # Create release note
