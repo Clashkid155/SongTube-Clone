@@ -26,8 +26,9 @@ jobs:
         # Android Keys  
       - name: Android Keys
         run: |
+            cd android/
             gpg --quiet --batch --yes --decrypt --passphrase=${{ secrets.KEY_SIGN }} \
-            --output android/android.zip android/android.zip.gpg && jar xvf android/android.zip
+            --output android.zip android.zip.gpg && jar xvf android.zip && cd -
        
       - uses: subosito/flutter-action@v1
         with:
