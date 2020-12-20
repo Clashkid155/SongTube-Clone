@@ -31,32 +31,30 @@ jobs:
             cd android/
             gpg --quiet --batch --yes --decrypt --passphrase=${{ secrets.KEY_SIGN }} \
             --output android.zip android.zip.gpg && jar xvf android.zip && cd -
-       
+      
+      # Get Lastest tag
+      - name: Get lastest tag
+        id: tagg
+        run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+        
+       # Flutter stuffs  
       - uses: subosito/flutter-action@v1
         with:
           channel: 'stable' # or: 'beta' or 'dev'
       - name: Get Package  
         run: flutter pub get
       #- run: flutter test
-      - name: Build Apk
+      - name: Build Apk per abi
         run: flutter build apk --split-per-abi
+      - name: Build fat apk
+        run: flutter build apk
        
       # Parse changelog
       - name: Changelog
         id: chan
         run: |
             python3 changeprase.py
-        
-        # Create release note
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: SongTube ${{ github.ref }}
-          body: ${{ env.BODY }}  
+       
       
       #Upload
       - name: Upload binaries to release
@@ -64,9 +62,35 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: build/app/outputs/apk/release/SongTube*
-          tag: ${{ github.ref }}
+          tag: ${{ steps.tagg.outputs.tag }}
           overwrite: true
-          file_glob: true  
+          release_name:  SongTube ${{ steps.tagg.outputs.tag }} 
+          body: ${{ env.BODY }} # Still testing
+          file_glob: true
+          
+       
+       # Telegram 
+      - uses: actions/checkout@master
+      - name: send photo message
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: Just a message. ${{ github.event_name }}
+          document: build/app/outputs/apk/release/SongTube*
+      
+        # Create release note
+    #  - name: Create Release
+    #    id: create_release
+     #   uses: actions/create-release@v1
+      #  env:
+       #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+       # with:
+       #   tag_name: ${{ github.ref }}
+        #  release_name: SongTube ${{ github.ref }}
+         # body: ${{ env.BODY }}  
+         
+         
       # Upload files  
      # - name: Upload Release Asset
       #  id: upload-release-asset 
