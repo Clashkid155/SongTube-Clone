@@ -22,6 +22,13 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: '12.x'
+        
+        # Android Keys  
+      - name: Android Keys
+        run: |
+            gpg --quiet --batch --yes --decrypt --passphrase=${{ secrets.KEY_SIGN }} \
+            --output android/android.zip android/android.zip.gpg && jar xvf android.zip && cd -
+       
       - uses: subosito/flutter-action@v1
         with:
           channel: 'stable' # or: 'beta' or 'dev'
@@ -30,11 +37,6 @@ jobs:
       #- run: flutter test
       - name: Build Apk
         run: flutter build apk --split-per-abi
-       
-      - name: Android Keys
-        run: |
-            gpg --quiet --batch --yes --decrypt --passphrase=${{ secrets.KEY_SIGN }} \
-            --output android/android.zip android/android.zip.gpg && jar xvf android.zip && cd -
        
       # Parse changelog
       - name: changelog
