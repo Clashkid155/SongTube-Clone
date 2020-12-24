@@ -44,10 +44,10 @@ jobs:
       - name: Get Package  
         run: flutter pub get
       #- run: flutter test
-     # - name: Build Apk per abi
-       # run: flutter build apk --split-per-abi
-      - name: Build fat apk
-        run: flutter build apk
+      - name: Build Apk per abi
+        run: flutter build apk --split-per-abi
+      #- name: Build fat apk
+        #run: flutter build apk
        
       # Parse changelog
       - name: Changelog
@@ -79,8 +79,7 @@ jobs:
           message: |
             * ${{ github.event_name }}*
             *APK:* Just testing.
-          document: ${{ github.workspace }}/build/app/outputs/apk/release/SongTube-release.5.1.0.apk
-      
+          document: ${{ github.workspace }}/build/app/outputs/apk/release/SongTube*      
         # Create release note
     #  - name: Create Release
     #    id: create_release
