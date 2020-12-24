@@ -65,7 +65,7 @@ jobs:
           tag: ${{ steps.tagg.outputs.tag }}
           overwrite: true
           release_name:  SongTube ${{ steps.tagg.outputs.tag }} 
-          body: ${{ env.BODY }} # Still testing
+          body: ${{ steps.chan.outputs.BODY }} # Still testing
           file_glob: true
           
        
@@ -75,8 +75,10 @@ jobs:
         with:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
-          args: Just a message. ${{ github.event_name }}
-          document: build/app/outputs/apk/release/SongTube*
+          message: |
+            **Changelog**: ${{ steps.chan.outputs.BODY }} 
+              ${{ github.event_name }}
+          document: ${{ github.workspace }}/build/app/outputs/apk/release/SongTube*
       
         # Create release note
     #  - name: Create Release
