@@ -79,7 +79,7 @@ jobs:
           message: |
             * ${{ github.event_name }}*
             *APK:* Just testing.
-          document: ${{ github.workspace }}/build/app/outputs/apk/release/SongTube*
+          document: ${{ github.workspace }}/build/app/outputs/apk/release/SongTube-release.5.1.0.apk
       
         # Create release note
     #  - name: Create Release
