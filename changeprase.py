@@ -13,4 +13,4 @@ with open("changelog.md", "r") as file:
     body = body.join(fake)
     # Deprecated
     #print(f"::set-env name=BODY::{body}")
-    print(f"BODY={body} >> $GITHUB_ENV")
+    print(f"::set-output name=BODY::{body}")
