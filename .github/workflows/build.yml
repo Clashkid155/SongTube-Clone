@@ -36,6 +36,13 @@ jobs:
       - name: Get lastest tag
         id: tagg
         run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+     
+      # Parse changelog
+      - name: Changelog
+        id: chan
+        run: |
+            python3 changeprase.py
+      
         
        # Flutter stuffs  
       - uses: subosito/flutter-action@v1
@@ -46,26 +53,46 @@ jobs:
       #- run: flutter test
       - name: Build Apk per abi
         run: flutter build apk --split-per-abi
-      #- name: Build fat apk
-        #run: flutter build apk
-       
-      # Parse changelog
-      - name: Changelog
-        id: chan
-        run: |
-            python3 changeprase.py
-       
-      
+
+       #Create release note
+      - name: Create release note
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.tagg.outputs.tag }}
+          release_name: SongTube ${{ github.ref }}
+          body: ${{ steps.chan.outputs.BODY }}
+ 
+     
       #Upload
-      - name: Upload binaries to release
+      - name: Upload split to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: build/app/outputs/apk/release/SongTube*
           tag: ${{ steps.tagg.outputs.tag }}
-          overwrite: true
-          release_name:  SongTube ${{ steps.tagg.outputs.tag }} 
-          body: ${{ steps.chan.outputs.BODY }} # Still testing
+            #overwrite: true
+            #release_name:  SongTube ${{ steps.tagg.outputs.tag }} 
+          file_glob: true
+      
+
+
+      - name: Build fat apk
+        run: flutter build apk
+       
+      
+      
+      #Upload
+      - name: Upload fat to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/app/outputs/apk/release/SongTube*
+          tag: ${{ steps.tagg.outputs.tag }}
+            #overwrite: true
+            #release_name:  SongTube ${{ steps.tagg.outputs.tag }} 
           file_glob: true
           
        
@@ -80,17 +107,7 @@ jobs:
             * ${{ github.event_name }}*
             *APK:* Just testing.
           document: ${{ github.workspace }}/build/app/outputs/apk/release/SongTube*      
-        # Create release note
-    #  - name: Create Release
-    #    id: create_release
-     #   uses: actions/create-release@v1
-      #  env:
-       #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-       # with:
-       #   tag_name: ${{ github.ref }}
-        #  release_name: SongTube ${{ github.ref }}
-         # body: ${{ env.BODY }}  
-         
+       
          
       # Upload files  
      # - name: Upload Release Asset
