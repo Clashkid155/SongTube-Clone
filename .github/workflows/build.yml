@@ -75,9 +75,10 @@ jobs:
         with:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
+          format: markdown
           message: |
-            **Changelog**: ${{ steps.chan.outputs.BODY }} 
-              ${{ github.event_name }}
+            * ${{ github.event_name }}*
+            *APK:* Just testing.
           document: ${{ github.workspace }}/build/app/outputs/apk/release/SongTube*
       
         # Create release note
