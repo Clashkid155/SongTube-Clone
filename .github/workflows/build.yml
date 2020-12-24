@@ -70,7 +70,7 @@ jobs:
           
        
        # Telegram 
-      - name: send photo message
+      - name: Send Message
         uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.TELEGRAM_TO }}
