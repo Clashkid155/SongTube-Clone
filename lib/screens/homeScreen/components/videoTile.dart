@@ -20,6 +20,7 @@ import 'package:songtube/routes/channel.dart';
 import 'package:songtube/routes/playlist.dart';
 import 'package:songtube/routes/video.dart';
 import 'package:songtube/ui/animations/blurPageRoute.dart';
+import 'package:songtube/ui/components/popupMenu.dart';
 import 'package:songtube/ui/dialogs/loadingDialog.dart';
 import 'package:songtube/ui/internal/snackbar.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -77,50 +78,62 @@ class VideoTile extends StatelessWidget {
       },
       child: Ink(
         decoration: BoxDecoration(
-          color: Theme.of(context).scaffoldBackgroundColor
+          color: Theme.of(context).cardColor
         ),
         child: Column(
           children: <Widget>[
-            AspectRatio(
-              aspectRatio: 16/9,
-              child: FutureBuilder<String>(
-                future: _getThumbnailLink(),
-                builder: (context, snapshot) {
-                  return Stack(
-                    alignment: Alignment.bottomCenter,
-                    children: [
-                      Hero(
-                        tag: searchItem is Video
-                          ? searchItem.id.value + "player"
-                          : searchItem is SearchVideo
-                            ? searchItem.videoId.value + "player"
-                            : searchItem.playlistId.value + "player",
+            FutureBuilder<String>(
+              future: _getThumbnailLink(),
+              builder: (context, snapshot) {
+                return Stack(
+                  alignment: Alignment.bottomCenter,
+                  children: [
+                    Hero(
+                      tag: searchItem is Video
+                        ? searchItem.id.value + "player"
+                        : searchItem is SearchVideo
+                          ? searchItem.videoId.value + "player"
+                          : searchItem.playlistId.value + "player",
+                      child: AspectRatio(
+                        aspectRatio: 16/9,
                         child: Container(
                           height: double.infinity,
                           width: double.infinity,
-                          child: FadeInImage(
-                            fadeInDuration: Duration(milliseconds: 200),
-                            placeholder: MemoryImage(kTransparentImage),
-                            image: snapshot.hasData
-                              ? NetworkImage(snapshot.data)
-                              : MemoryImage(kTransparentImage),
-                            fit: BoxFit.cover,
+                          padding: EdgeInsets.only(left: 12, right: 12),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Transform.scale(
+                              scale: searchItem is Video
+                                ? 1.1 : 1.0,
+                              child: FadeInImage(
+                                fadeInDuration: Duration(milliseconds: 200),
+                                placeholder: MemoryImage(kTransparentImage),
+                                image: snapshot.hasData
+                                  ? NetworkImage(snapshot.data)
+                                  : MemoryImage(kTransparentImage),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                      if (searchItem is SearchPlaylist)
-                      Container(
-                          height: 25,
-                          color: Colors.black.withOpacity(0.4),
-                          child: Center(
-                            child: Icon(EvaIcons.musicOutline,
-                              color: Colors.white, size: 20),
-                          ),
-                        )
-                    ],
-                  );
-                }
-              ),
+                    ),
+                    if (searchItem is SearchPlaylist)
+                    Container(
+                      margin: EdgeInsets.only(left: 12, right: 12),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.4),
+                        borderRadius: BorderRadius.circular(10)
+                      ),
+                      height: 25,
+                      child: Center(
+                        child: Icon(EvaIcons.musicOutline,
+                          color: Colors.white, size: 20),
+                      ),
+                    )
+                  ],
+                );
+              }
             ),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -214,21 +227,23 @@ class VideoTile extends StatelessWidget {
                               : "${searchItem.playlistTitle}",
                           style: TextStyle(
                             fontWeight: FontWeight.w500,
-                            fontSize: 14
+                            fontSize: 13
                           ),
                           overflow: TextOverflow.clip,
                         ),
                         SizedBox(height: 4),
                         Text(
                           searchItem is Video
-                            ? "${searchItem.engagement.viewCount}"
+                            ? "${searchItem.author} • " +
+                              "${NumberFormat.compact().format(searchItem.engagement.viewCount)} views"
                             : searchItem is SearchVideo
                               ? "${searchItem.videoAuthor} • " +
                                 "${NumberFormat.compact().format(searchItem.videoViewCount)} views"
                               : "Playlist • ${searchItem.playlistVideoCount} videos",
                           style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 12
+                            color: Theme.of(context).textTheme
+                              .bodyText1.color.withOpacity(0.4),
+                            fontSize: 11
                           ),
                           overflow: TextOverflow.clip,
                         ),
@@ -237,163 +252,134 @@ class VideoTile extends StatelessWidget {
                   ),
                 ),
                 if (searchItem is SearchVideo || searchItem is Video)
-                GestureDetector(
-                  onTapDown: (TapDownDetails details) {
-                    showMenu<String>(
-                      context: context,
-                      position: RelativeRect.fromLTRB(
-                        details.globalPosition.dx,
-                        details.globalPosition.dy,
-                        0, 0
-                      ),
-                      items: [
-                        PopupMenuItem<String>(
-                          child: Text("Share"),
-                          value: "Share",
-                        ),
-                        PopupMenuItem<String>(
-                          child: Text("Copy link"),
-                          value: "Copy Link",
-                        ),
-                        PopupMenuItem<String>(
-                          child: Text("Download"),
-                          value: "Download",
-                        ),
-                        if (onDelete != null)
-                        PopupMenuItem<String>(
-                          child: Text("Remove"),
-                          value: "Remove",
-                        ),
-                        if (enableSaveToFavorites)
-                        PopupMenuItem<String>(
-                          child: Text("Add to Favorites"),
-                          value: "Favorites",
-                        ),
-                        if (enableSaveToWatchLater)
-                        PopupMenuItem<String>(
-                          child: Text("Add to Watch later"),
-                          value: "Watch Later",
-                        ),
-                      ],
-                    ).then((value) async {
-                      switch(value) {
-                        case "Share":
-                          Share.share(
-                            searchItem is Video
-                              ? "https://www.youtube.com/watch?v=${searchItem.id.value}"
-                              : searchItem is SearchVideo
-                                ? "https://www.youtube.com/watch?v=${searchItem.videoId.value}"
-                                : "https://www.youtube.com/playlist?list=${searchItem.PlaylistId.value}"
-                          );
-                          break;
-                        case "Copy Link":
-                          String link = searchItem is Video
+                FlexiblePopupMenu(
+                  items: [
+                    "Share",
+                    "Copy Link",
+                    "Download",
+                    onDelete != null ? "Remove":"",
+                    enableSaveToFavorites ? "Add to Favorites":"",
+                    enableSaveToWatchLater ? "Add to Watch Later":""
+                  ],
+                  onItemTap: (String value) async {
+                    switch(value) {
+                      case "Share":
+                        Share.share(
+                          searchItem is Video
                             ? "https://www.youtube.com/watch?v=${searchItem.id.value}"
                             : searchItem is SearchVideo
                               ? "https://www.youtube.com/watch?v=${searchItem.videoId.value}"
-                              : "https://www.youtube.com/playlist?list=${searchItem.PlaylistId.value}";
-                          Clipboard.setData(ClipboardData(
-                            text: link
-                          ));
-                          final scaffold = Scaffold.of(context);
-                          AppSnack.showSnackBar(
-                            icon: Icons.copy,
-                            title: "Link copied to Clipboard",
-                            duration: Duration(seconds: 2),
-                            context: context,
-                            scaffoldKey: scaffold
-                          );
-                          break;
-                        case "Download":
-                          showModalBottomSheet<dynamic>(
-                            isScrollControlled: true,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(30),
-                                topRight: Radius.circular(30)
-                              ),
+                              : "https://www.youtube.com/playlist?list=${searchItem.PlaylistId.value}"
+                        );
+                        break;
+                      case "Copy Link":
+                        String link = searchItem is Video
+                          ? "https://www.youtube.com/watch?v=${searchItem.id.value}"
+                          : searchItem is SearchVideo
+                            ? "https://www.youtube.com/watch?v=${searchItem.videoId.value}"
+                            : "https://www.youtube.com/playlist?list=${searchItem.PlaylistId.value}";
+                        Clipboard.setData(ClipboardData(
+                          text: link
+                        ));
+                        final scaffold = Scaffold.of(context);
+                        AppSnack.showSnackBar(
+                          icon: Icons.copy,
+                          title: "Link copied to Clipboard",
+                          duration: Duration(seconds: 2),
+                          context: context,
+                          scaffoldKey: scaffold
+                        );
+                        break;
+                      case "Download":
+                        showModalBottomSheet<dynamic>(
+                          isScrollControlled: true,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(30),
+                              topRight: Radius.circular(30)
                             ),
-                            clipBehavior: Clip.antiAlias,
-                            context: context,
-                            builder: (context) {
-                              String url = searchItem is SearchVideo
-                                ? "http://youtube.com/watch?v=${searchItem.videoId.value}"
-                                : "http://youtube.com/watch?v=${searchItem.id.value}";
-                              return Wrap(
-                                children: [
-                                  DownloadMenu(
-                                    videoUrl: url,
-                                    scaffoldState: manager
-                                      .libraryScaffoldKey.currentState,
-                                  ),
-                                ],
-                              );
-                            }
-                          );
-                          break;
-                        case "Remove":
-                          onDelete();
-                          break;
-                        case "Favorites":
-                          Video videoToSave;
-                          if (searchItem is SearchVideo) {
-                            showDialog(
-                              context: context,
-                              barrierDismissible: false,
-                              builder: (_) => LoadingDialog()
+                          ),
+                          clipBehavior: Clip.antiAlias,
+                          context: context,
+                          builder: (context) {
+                            String url = searchItem is SearchVideo
+                              ? "http://youtube.com/watch?v=${searchItem.videoId.value}"
+                              : "http://youtube.com/watch?v=${searchItem.id.value}";
+                            return Wrap(
+                              children: [
+                                DownloadMenu(
+                                  videoUrl: url,
+                                  scaffoldState: manager
+                                    .libraryScaffoldKey.currentState,
+                                ),
+                              ],
                             );
-                            videoToSave = await manager.youtubeExtractor
-                              .getVideoDetails(
-                                searchItem.videoId
-                              );
-                            Navigator.pop(context);
-                          } else {
-                            videoToSave = searchItem;
                           }
-                          List<Video> videos = prefs.favoriteVideos;
-                          videos.add(videoToSave);
-                          prefs.favoriteVideos = videos;
-                          AppSnack.showSnackBar(
-                            icon: EvaIcons.heartOutline,
-                            title: "Video added to Favorites",
+                        );
+                        break;
+                      case "Remove":
+                        onDelete();
+                        break;
+                      case "Add to Favorites":
+                        Video videoToSave;
+                        if (searchItem is SearchVideo) {
+                          showDialog(
                             context: context,
-                            scaffoldKey: Scaffold.of(context)
+                            barrierDismissible: false,
+                            builder: (_) => LoadingDialog()
                           );
-                          break;
-                        case "Watch Later":
-                          Video videoToSave;
-                          if (searchItem is SearchVideo) {
-                            showDialog(
-                              context: context,
-                              barrierDismissible: false,
-                              builder: (_) => LoadingDialog()
+                          videoToSave = await manager.youtubeExtractor
+                            .getVideoDetails(
+                              searchItem.videoId
                             );
-                            videoToSave = await manager.youtubeExtractor
-                              .getVideoDetails(
-                                searchItem.videoId
-                              );
-                            Navigator.pop(context);
-                          } else {
-                            videoToSave = searchItem;
-                          }
-                          List<Video> videos = prefs.watchLaterVideos;
-                          videos.add(videoToSave);
-                          prefs.watchLaterVideos = videos;
-                          AppSnack.showSnackBar(
-                            icon: EvaIcons.clockOutline,
-                            title: "Video added to Watch Later",
+                          Navigator.pop(context);
+                        } else {
+                          videoToSave = searchItem;
+                        }
+                        List<Video> videos = prefs.favoriteVideos;
+                        videos.add(videoToSave);
+                        prefs.favoriteVideos = videos;
+                        AppSnack.showSnackBar(
+                          icon: EvaIcons.heartOutline,
+                          title: "Video added to Favorites",
+                          context: context,
+                          scaffoldKey: Scaffold.of(context)
+                        );
+                        break;
+                      case "Add to Watch Later":
+                        Video videoToSave;
+                        if (searchItem is SearchVideo) {
+                          showDialog(
                             context: context,
-                            scaffoldKey: Scaffold.of(context)
+                            barrierDismissible: false,
+                            builder: (_) => LoadingDialog()
                           );
-                          break;
+                          videoToSave = await manager.youtubeExtractor
+                            .getVideoDetails(
+                              searchItem.videoId
+                            );
+                          Navigator.pop(context);
+                        } else {
+                          videoToSave = searchItem;
+                        }
+                        List<Video> videos = prefs.watchLaterVideos;
+                        videos.add(videoToSave);
+                        prefs.watchLaterVideos = videos;
+                        AppSnack.showSnackBar(
+                          icon: EvaIcons.clockOutline,
+                          title: "Video added to Watch Later",
+                          context: context,
+                          scaffoldKey: Scaffold.of(context)
+                        );
+                        break;
                       }
-                    });
                   },
+                  borderRadius: 10,
                   child: Container(
                     padding: EdgeInsets.all(12),
                     color: Colors.transparent,
                     child: Icon(Icons.more_vert_rounded,
-                      size: 18),
+                      size: 14),
                   ),
                 )
               ],

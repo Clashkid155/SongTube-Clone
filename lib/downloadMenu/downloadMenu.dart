@@ -3,6 +3,7 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:songtube/downloadMenu/components/homeMenu.dart';
+import 'package:songtube/downloadMenu/components/loadingMenu.dart';
 
 // Internal
 import 'package:songtube/downloadMenu/components/videoMenu.dart';
@@ -129,11 +130,7 @@ class _DownloadMenuState extends State<DownloadMenu> with TickerProviderStateMix
       case CurrentDownloadMenu.Loading:
         returnWidget = Container(
           margin: EdgeInsets.only(top: 12, bottom: 12),
-          child: Center(
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation(Theme.of(context).accentColor),
-            ),
-          ),
+          child: LoadingDownloadMenu(),
         ); break;
     }
     return returnWidget;

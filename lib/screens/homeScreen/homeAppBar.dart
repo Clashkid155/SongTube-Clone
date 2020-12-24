@@ -1,6 +1,4 @@
-import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:songtube/provider/configurationProvider.dart';
 import 'package:songtube/provider/managerProvider.dart';
@@ -11,10 +9,17 @@ import 'package:songtube/ui/animations/blurPageRoute.dart';
 import 'package:songtube/ui/components/searchBar.dart';
 import 'package:songtube/ui/dialogs/loadingDialog.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
+import 'package:md2_tab_indicator/md2_tab_indicator.dart';
 
 class HomePageAppBar extends StatefulWidget {
   final bool openSearch;
-  HomePageAppBar(this.openSearch);
+  final TabController tabController;
+  final Function onSearch;
+  HomePageAppBar({
+    this.openSearch,
+    this.tabController,
+    this.onSearch
+  });
 
   @override
   _HomePageAppBarState createState() => _HomePageAppBarState();
@@ -28,106 +33,146 @@ class _HomePageAppBarState extends State<HomePageAppBar> {
     PreferencesProvider prefs = Provider.of<PreferencesProvider>(context);
     return SliverAppBar(
       titleSpacing: 0,
-      elevation: 0,
+      pinned: true,
       floating: true,
+      snap: true,
       backgroundColor: Theme.of(context).cardColor,
       title: AnimatedSwitcher(
         reverseDuration: Duration(milliseconds: 200),
         duration: Duration(milliseconds: 400),
-        child: !widget.openSearch ? Row(
-          children: [
-            Container(
-              margin: EdgeInsets.only(right: 8, left: 16),
-              height: 40,
-              width: 40,
-              child: Image.asset('assets/images/ic_launcher.png')
+        child: STSearchBar(
+          controller: manager.urlController,
+          focusNode: manager.searchBarFocusNode,
+          onSearch: (searchQuery) async {
+            widget.onSearch();
+            manager.searchBarFocusNode.unfocus();
+            manager.showSearchBar = false;
+            if (VideoId.parseVideoId(searchQuery) != null) {
+              String id = VideoId.parseVideoId(searchQuery);
+              showDialog(
+                context: context,
+                builder: (_) => LoadingDialog()
+              );
+              YoutubeExplode yt = YoutubeExplode();
+              Video video = await yt.videos.get(id);
+              manager.updateMediaInfoSet(video, null);
+              Navigator.pop(context);
+              Navigator.push(context,
+                BlurPageRoute(
+                  blurStrength: prefs.enableBlurUI ? 20 : 0,
+                  slideOffset: Offset(0.0, 10.0),
+                  builder: (_) => YoutubePlayerVideoPage(
+                    url: video.id.value,
+                    thumbnailUrl: video.thumbnails.highResUrl,
+                  )
+              ));
+              return;
+            }
+            if (PlaylistId.parsePlaylistId(searchQuery) != null) {
+              String id = PlaylistId.parsePlaylistId(searchQuery);
+              showDialog(
+                context: context,
+                builder: (_) => LoadingDialog()
+              );
+              YoutubeExplode yt = YoutubeExplode();
+              Playlist playlist = await yt.playlists.get(id);
+              manager.updateMediaInfoSet(playlist, null);
+              Navigator.pop(context);
+              Navigator.push(context,
+                BlurPageRoute(
+                  blurStrength: prefs.enableBlurUI ? 20 : 0,
+                  slideOffset: Offset(0.0, 10.0),
+                  builder: (_) => YoutubePlayerPlaylistPage()
+              ));
+              return;
+            }
+            manager.youtubeSearchQuery = manager.urlController.text;
+            manager.updateYoutubeSearchResults(updateResults: true);
+            if (searchQuery.length > 1) {
+              Future.delayed(Duration(milliseconds: 400), () =>
+                config.addStringtoSearchHistory(searchQuery.trim()
+              ));
+            }
+          },
+          onChanged: (_) {
+            setState(() {});
+          },
+          onBack: () {
+            manager.showSearchBar = false;
+          },
+          onClear: () {
+            manager.urlController.clear();
+            setState(() {});
+          },
+          leadingIcon: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Image.asset(
+              DateTime.now().month == 12
+                ? 'assets/images/logo_christmas.png'
+                : 'assets/images/ic_launcher.png',
+              fit: BoxFit.cover,
+              filterQuality: FilterQuality.high,
             ),
-            Text(
-              "SongTube",
-              style: TextStyle(
-                fontSize: 24,
-                fontFamily: "YTSans",
-                color: Theme.of(context).textTheme.bodyText1.color
-                  .withOpacity(0.8)
-              ),
+          ),
+          searchHint: "SongTube",
+          onTap: () {
+            manager.showSearchBar = true;
+          }
+        )
+      ),
+      bottom: PreferredSize(
+        preferredSize: Size(
+          MediaQuery.of(context).size.width,
+          48
+        ),
+        child: Padding(
+          padding: EdgeInsets.only(left: 32),
+          child: TabBar(
+            controller: widget.tabController,
+            onTap: (int tabIndex) {
+              if (tabIndex == 0) {
+                manager.currentHomeTab = HomeScreenTab.Home;
+              } else if (tabIndex == 1) {
+                manager.currentHomeTab = HomeScreenTab.Trending;
+              } else if (tabIndex == 2) {
+                manager.currentHomeTab = HomeScreenTab.Music;
+              } else if (tabIndex == 3) {
+                manager.currentHomeTab = HomeScreenTab.Favorites;
+              } else if (tabIndex == 4) {
+                manager.currentHomeTab = HomeScreenTab.WatchLater;
+              }
+            },
+            physics: BouncingScrollPhysics(),
+            isScrollable: true,
+            labelStyle: TextStyle(
+              fontSize: 13,
+              fontFamily: 'Product Sans',
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.3
             ),
-            Spacer(),
-            IconButton(
-              icon: Icon(EvaIcons.searchOutline,
-                color: Theme.of(context).iconTheme.color),
-              onPressed: () {
-                manager.showSearchBar = true;
-                manager.searchBarFocusNode.requestFocus();
-              },
+            unselectedLabelStyle: TextStyle(
+                fontSize: 13,
+                fontFamily: 'Product Sans',
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.2
             ),
-            SizedBox(width: 8)
-          ],
-        ) : STSearchBar(
-              controller: manager.urlController,
-              focusNode: manager.searchBarFocusNode,
-              onSearch: (searchQuery) async {
-                manager.searchBarFocusNode.unfocus();
-                manager.showSearchBar = false;
-                if (VideoId.parseVideoId(searchQuery) != null) {
-                  String id = VideoId.parseVideoId(searchQuery);
-                  showDialog(
-                    context: context,
-                    builder: (_) => LoadingDialog()
-                  );
-                  YoutubeExplode yt = YoutubeExplode();
-                  Video video = await yt.videos.get(id);
-                  manager.updateMediaInfoSet(video, null);
-                  Navigator.pop(context);
-                  Navigator.push(context,
-                    BlurPageRoute(
-                      blurStrength: prefs.enableBlurUI ? 20 : 0,
-                      slideOffset: Offset(0.0, 10.0),
-                      builder: (_) => YoutubePlayerVideoPage(
-                        url: video.id.value,
-                        thumbnailUrl: video.thumbnails.highResUrl,
-                      )
-                  ));
-                  return;
-                }
-                if (PlaylistId.parsePlaylistId(searchQuery) != null) {
-                  String id = PlaylistId.parsePlaylistId(searchQuery);
-                  showDialog(
-                    context: context,
-                    builder: (_) => LoadingDialog()
-                  );
-                  YoutubeExplode yt = YoutubeExplode();
-                  Playlist playlist = await yt.playlists.get(id);
-                  manager.updateMediaInfoSet(playlist, null);
-                  Navigator.pop(context);
-                  Navigator.push(context,
-                    BlurPageRoute(
-                      blurStrength: prefs.enableBlurUI ? 20 : 0,
-                      slideOffset: Offset(0.0, 10.0),
-                      builder: (_) => YoutubePlayerPlaylistPage()
-                  ));
-                  return;
-                }
-                manager.youtubeSearchQuery = manager.urlController.text;
-                manager.updateYoutubeSearchResults(updateResults: true);
-                if (searchQuery.length > 1) {
-                  Future.delayed(Duration(milliseconds: 400), () =>
-                    config.addStringtoSearchHistory(searchQuery.trim()
-                  ));
-                }
-              },
-              onChanged: (_) {
-                setState(() {});
-              },
-              onBack: () {
-                manager.showSearchBar = false;
-              },
-              onClear: () {
-                manager.urlController.clear();
-                setState(() {});
-              },
-              leadingIcon: Icon(MdiIcons.youtube, size: 32, color: Colors.redAccent),
-              searchHint: "Search Youtube..."
-            )
+            labelColor: Theme.of(context).accentColor,
+            unselectedLabelColor: Theme.of(context).textTheme.bodyText1
+              .color.withOpacity(0.4),
+            indicator: MD2Indicator(
+              indicatorSize: MD2IndicatorSize.normal,
+              indicatorHeight: 4,
+              indicatorColor: Theme.of(context).accentColor,
+            ),
+            tabs: [
+              Tab(text: "Home Page"),
+              Tab(text: "Trending"),
+              Tab(text: "Music"),
+              Tab(text: "Favorites"),
+              Tab(text: "Watch Later")
+            ],
+          ),
+        ),
       ),
     );
   }

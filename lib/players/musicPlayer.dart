@@ -8,7 +8,6 @@ import 'package:songtube/players/service/playerService.dart';
 import 'package:songtube/players/components/musicPlayer/collapsedPanel.dart';
 import 'package:songtube/players/components/musicPlayer/expandedPanel.dart';
 import 'package:songtube/players/service/screenStateStream.dart';
-import 'package:songtube/provider/configurationProvider.dart';
 import 'package:songtube/provider/mediaProvider.dart';
 
 // Packages
@@ -25,50 +24,41 @@ class SlidingPlayerPanel extends StatelessWidget {
     MediaProvider mediaProvider = Provider.of<MediaProvider>(context);
     PreferencesProvider prefs = Provider.of<PreferencesProvider>(context);
     return StreamBuilder<ScreenState>(
-        stream: screenStateStream,
-        builder: (context, snapshot) {
-          final screenState = snapshot.data;
-          final state = screenState?.playbackState;
-          final processingState =
-              state?.processingState ?? AudioProcessingState.none;
-          final mediaItem = screenState?.mediaItem;
-          AudioService.currentMediaItemStream.listen((newMediaItem) {
-            if (newMediaItem != mediaProvider.mediaItem) {
-              mediaProvider.mediaItem = newMediaItem;
-            }
-          });
-          if (mediaItem != null) {
-            if (mediaProvider.slidingPanelOpen == true) {
-              Color dominantColor = prefs.enableBlurUI
-                  ? mediaProvider.dominantColor == null
-                      ? Colors.white
-                      : mediaProvider.dominantColor
-                  : Theme.of(context).accentColor;
-              Color textColor = prefs.enableBlurUI
-                  ? dominantColor.computeLuminance() > 0.5
-                      ? Colors.black
-                      : Colors.white
-                  : Theme.of(context).textTheme.bodyText1.color;
-              SystemChrome.setSystemUIOverlayStyle(
-                SystemUiOverlayStyle(
-                  statusBarIconBrightness: textColor == Colors.black
-                      ? Brightness.dark
-                      : Brightness.light,
-                ),
-              );
-            }
-            if (mediaProvider.artwork != null) {
-              return ShowUpTransition(
-                duration: Duration(milliseconds: 400),
-                slideSide: SlideFromSlide.BOTTOM,
-                forward: processingState != AudioProcessingState.none,
-                child: SlidingPlayer(
-                  snapshot: snapshot,
-                ),
-              );
-            } else {
-              return Container();
-            }
+      stream: screenStateStream,
+      builder: (context, snapshot) {
+        final screenState = snapshot.data;
+        final state = screenState?.playbackState;
+        final processingState =
+          state?.processingState ?? AudioProcessingState.none;
+        final mediaItem = screenState?.mediaItem;
+        AudioService.currentMediaItemStream.listen((newMediaItem) {
+          if (newMediaItem != mediaProvider.mediaItem) {
+            mediaProvider.mediaItem = newMediaItem;
+          }
+        });
+        if (mediaItem != null) {
+          if (mediaProvider.slidingPanelOpen == true) {
+            Color dominantColor = prefs.enablePlayerBlurBackground
+              ? mediaProvider.dominantColor == null ? Colors.white : mediaProvider.dominantColor
+              : Theme.of(context).accentColor;
+            Color textColor = prefs.enablePlayerBlurBackground
+              ? dominantColor.computeLuminance() > 0.5 ? Colors.black : Colors.white
+              : Theme.of(context).textTheme.bodyText1.color;
+            SystemChrome.setSystemUIOverlayStyle(
+              SystemUiOverlayStyle(
+                statusBarIconBrightness: textColor == Colors.black? Brightness.dark : Brightness.light,
+              ),
+            );
+          }
+          if (mediaProvider.artwork != null) {
+            return ShowUpTransition(
+              duration: Duration(milliseconds: 400),
+              slideSide: SlideFromSlide.BOTTOM,
+              forward: processingState != AudioProcessingState.none,
+              child: SlidingPlayer(
+                snapshot: snapshot,
+              ),
+            );
           } else {
             return Container();
           }
@@ -85,16 +75,12 @@ class SlidingPlayer extends StatelessWidget {
   Widget build(BuildContext context) {
     MediaProvider mediaProvider = Provider.of<MediaProvider>(context);
     PreferencesProvider prefs = Provider.of<PreferencesProvider>(context);
-    Color dominantColor = prefs.enableBlurUI
-        ? mediaProvider.dominantColor == null
-            ? Colors.white
-            : mediaProvider.dominantColor
-        : Theme.of(context).accentColor;
-    Color textColor = prefs.enableBlurUI
-        ? dominantColor.computeLuminance() > 0.5
-            ? Colors.black
-            : Colors.white
-        : Theme.of(context).textTheme.bodyText1.color;
+    Color dominantColor = prefs.enablePlayerBlurBackground
+      ? mediaProvider.dominantColor == null ? Colors.white : mediaProvider.dominantColor
+      : Theme.of(context).accentColor;
+    Color textColor = prefs.enablePlayerBlurBackground
+      ? dominantColor.computeLuminance() > 0.5 ? Colors.black : Colors.white
+      : Theme.of(context).textTheme.bodyText1.color;
     return SlidingUpPanel(
       controller: mediaProvider.panelController,
       borderRadius: BorderRadius.circular(10),

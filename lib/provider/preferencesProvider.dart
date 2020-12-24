@@ -108,12 +108,30 @@ class PreferencesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool get enablePlayerBlurBackground {
+    return prefs.getBool('enablePlayerBlurBackground') ?? true;
+  }
+  set enablePlayerBlurBackground(bool value) {
+    prefs.setBool('enablePlayerBlurBackground', value);
+    notifyListeners();
+  }
+
   // MusicPlayer Artwork Rounded Corners
   double get musicPlayerArtworkRoundCorners {
     return prefs.getDouble('musicPlayerArtworkRoundCorners') ?? 20;
   }
   set musicPlayerArtworkRoundCorners(double value) {
     prefs.setDouble('musicPlayerArtworkRoundCorners', value);
+    notifyListeners();
+  }
+
+  // Youtube Auto-Play
+  bool get youtubeAutoPlay {
+    return prefs.getBool('youtubeAutoPlay') ?? true;
+  }
+
+  set youtubeAutoPlay(bool value) {
+    prefs.setBool('youtubeAutoPlay', value);
     notifyListeners();
   }
 
