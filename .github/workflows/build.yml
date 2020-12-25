@@ -41,7 +41,15 @@ jobs:
       - name: Changelog
         id: chan
         run: |
-           echo "::set-output name=BODY::$(python3 changeprase.py)"
+           # Parse changelog
+           BODY=$(python3 changeprase.py)
+           BODY="${BODY//'%'/'%25'}"
+           BODY="${BODY//$'\n'/'%0A'}"
+           BODY="${BODY//$'\r'/'%0D'}"
+ 
+           echo "Got changelog: $BODY"
+           echo "::set-output name=BODY::$BODY"
+        #echo "::set-output name=BODY::$(python3 changeprase.py)"
            #python3 changeprase.py
       
         
