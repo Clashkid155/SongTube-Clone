@@ -9,7 +9,7 @@ with open("changelog.md", "r") as file:
             li.append(a)
         if len(li) == 1 and not i.isspace():
             fake.append(i)
-    body = body.join(fake)
+    body = body.join(fake).strip()
     # Deprecated
     #print(f"::set-env name=BODY::{body}")
-    print(f"::set-output name=BODY::{body.strip()}")
+    print(f"{body}")
