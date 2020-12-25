@@ -102,9 +102,9 @@ jobs:
         with:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
-          format: markdown
+          format: html
           message: |
-            *New update available*. See [Github]( ${{ steps.create_release.outputs.html_url }})
+            <b>New update available</b> See <a href=${{ steps.create_release.outputs.html_url }})>Github</a>
             #document: ${{ github.workspace }}/build/app/outputs/apk/release/SongTube*      
        
          
