@@ -104,9 +104,8 @@ jobs:
           token: ${{ secrets.TELEGRAM_TOKEN }}
           format: markdown
           message: |
-            * ${{ github.event_name }}*
-            *APK:* Just testing.
-          document: ${{ github.workspace }}/build/app/outputs/apk/release/SongTube*      
+            *New update available*. See [Github]( ${{ steps.create_release.outputs.html_url }})
+            #document: ${{ github.workspace }}/build/app/outputs/apk/release/SongTube*      
        
          
       # Upload files  
