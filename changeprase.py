@@ -8,8 +8,9 @@ with open("changelog.md", "r") as file:
         if i.startswith("#"):
             li.append(a)
         if len(li) == 1:
+            if i.isspace():
+                fake.append("%OA")
             fake.append(i)
-#           print(i, end="")
     body = body.join(fake)
     # Deprecated
     #print(f"::set-env name=BODY::{body}")
