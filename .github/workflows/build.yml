@@ -41,7 +41,8 @@ jobs:
       - name: Changelog
         id: chan
         run: |
-            python3 changeprase.py
+           echo "::set-output name=BODY::$(python3 changeprase.py)"
+           #python3 changeprase.py
       
         
        # Flutter stuffs  
@@ -104,7 +105,7 @@ jobs:
           token: ${{ secrets.TELEGRAM_TOKEN }}
           format: html
           message: |
-            <b>New update available</b> See <a href=${{ steps.create_release.outputs.html_url }})>Github</a>
+            <b>New update available</b> See <a href="${{ steps.create_release.outputs.html_url }}">Github</a>
             #document: ${{ github.workspace }}/build/app/outputs/apk/release/SongTube*      
        
          
