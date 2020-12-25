@@ -7,9 +7,7 @@ with open("changelog.md", "r") as file:
         a+=1
         if i.startswith("#"):
             li.append(a)
-        if len(li) == 1:
-            if i.isspace():
-                fake.append("%OA")
+        if len(li) == 1 and not i.isspace():
             fake.append(i)
     body = body.join(fake)
     # Deprecated
