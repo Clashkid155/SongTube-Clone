@@ -76,7 +76,7 @@ class _TagsEditorPageState extends State<TagsEditorPage> {
         elevation: 0,
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         title: Text(
-          "Tags Editor",
+          Languages.of(context).labelTagsEditor.replaceAll("\n", " "),
           style: TextStyle(
             color: Theme.of(context).textTheme.bodyText1.color
           ),
@@ -88,12 +88,18 @@ class _TagsEditorPageState extends State<TagsEditorPage> {
           FlexiblePopupMenu(
             borderRadius: 15,
             items: [
-              "Perform Automatic Tagging",
-              "Select Tags from MusicBrainz",
+              FlexiblePopupItem(
+                title: Languages.of(context).labelPerformAutomaticTagging,
+                value: "AutoTag"
+              ),
+              FlexiblePopupItem(
+                title: Languages.of(context).labelSelectTagsfromMusicBrainz,
+                value: "SearchMB"
+              ),
             ],
             onItemTap: (value) async {
               switch (value) {
-                case "Perform Automatic Tagging":
+                case "AutoTag":
                   showDialog(
                     context: context,
                     builder: (_) => LoadingDialog()
@@ -107,7 +113,7 @@ class _TagsEditorPageState extends State<TagsEditorPage> {
                   Navigator.pop(context);
                   setState(() {});
                   break;
-                case "Select Tags from MusicBrainz":
+                case "SearchMB":
                   var record = await Navigator.push(context,
                     BlurPageRoute(builder: (context) => 
                       TagsResultsPage(
@@ -304,7 +310,7 @@ class _TagsEditorPageState extends State<TagsEditorPage> {
             Navigator.pop(context);
             AppSnack.showSnackBar(
               icon: Icons.warning,
-              title: "Audio Format not Compatible",
+              title: Languages.of(context).labelAudioFormatNotCompatible,
               duration: Duration(seconds: 2),
               context: context,
               scaffoldKey: scaffoldKey.currentState

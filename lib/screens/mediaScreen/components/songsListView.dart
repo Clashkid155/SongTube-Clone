@@ -5,6 +5,7 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:songtube/internal/languages.dart';
 import 'package:songtube/internal/models/videoFile.dart';
 import 'package:songtube/players/service/playerService.dart';
 import 'package:songtube/players/videoPlayer.dart';
@@ -98,8 +99,14 @@ class SongsListView extends StatelessWidget {
             trailing: FlexiblePopupMenu(
               borderRadius: 10,
               items: [
-                "Edit Tags",
-                "Delete Song"
+                FlexiblePopupItem(
+                  title: Languages.of(context).labelEditTags,
+                  value: "Edit Tags"
+                ),
+                FlexiblePopupItem(
+                  title: Languages.of(context).labelDeleteSong,
+                  value: "Delete"
+                )
               ],
               onItemTap: (String value) async {
                 if (value != null) {
@@ -109,7 +116,7 @@ class SongsListView extends StatelessWidget {
                     }
                   }
                   switch (value) {
-                    case "Delete Song":
+                    case "Delete":
                       mediaProvider.deleteSong(song);
                       break;
                     case "Edit Tags":

@@ -40,7 +40,7 @@ class VideoTags extends StatelessWidget {
           ),
           SizedBox(width: 8),
           Text(
-            "Tags",
+            Languages.of(context).labelTags,
             style: TextStyle(
               fontWeight: FontWeight.w400,
               fontSize: 15,
@@ -52,19 +52,28 @@ class VideoTags extends StatelessWidget {
       trailing: FlexiblePopupMenu(
         borderRadius: 15,
         items: [
-          "Perform Automatic Tagging",
-          "Select Tags from MusicBrainz",
-          "Select Artwork from device"
+          FlexiblePopupItem(
+            title: Languages.of(context).labelSelectTagsfromMusicBrainz,
+            value: "AutoTag",
+          ),
+          FlexiblePopupItem(
+            title: Languages.of(context).labelSelectTagsfromMusicBrainz,
+            value: "SearchMB",
+          ),
+          FlexiblePopupItem(
+            title: Languages.of(context).labelSelectArtworkFromDevice,
+            value: "FromDevice",
+          )
         ],
         onItemTap: (value) {
           switch (value) {
-            case "Perform Automatic Tagging":
+            case "AutoTag":
               onMBTap();
               break;
-            case "Select Tags from MusicBrainz":
+            case "SearchMB":
               onMBSearchTap();
               break;
-            case "Select Artwork from device":
+            case "FromDevice":
               onArtworkTap();
               break;
           }
@@ -77,7 +86,7 @@ class VideoTags extends StatelessWidget {
               Container(
                 margin: EdgeInsets.only(right: 8),
                 child: Text(
-                  " Tags\n  Editor  ",
+                  Languages.of(context).labelTagsEditor,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 12

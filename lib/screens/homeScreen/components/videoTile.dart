@@ -7,6 +7,7 @@ import 'package:image_fade/image_fade.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:share/share.dart';
 import 'package:songtube/downloadMenu/downloadMenu.dart';
+import 'package:songtube/internal/languages.dart';
 import 'package:songtube/internal/models/channelLogo.dart';
 
 // Internal
@@ -254,12 +255,33 @@ class VideoTile extends StatelessWidget {
                 if (searchItem is SearchVideo || searchItem is Video)
                 FlexiblePopupMenu(
                   items: [
-                    "Share",
-                    "Copy Link",
-                    "Download",
-                    onDelete != null ? "Remove":"",
-                    enableSaveToFavorites ? "Add to Favorites":"",
-                    enableSaveToWatchLater ? "Add to Watch Later":""
+                    FlexiblePopupItem(
+                      title: Languages.of(context).labelShare,
+                      value: "Share"
+                    ),
+                    FlexiblePopupItem(
+                      title: Languages.of(context).labelCopyLink,
+                      value: "CopyLink"
+                    ),
+                    FlexiblePopupItem(
+                      title: Languages.of(context).labelDownload,
+                      value: "Download"
+                    ),
+                    if (onDelete != null)
+                    FlexiblePopupItem(
+                      title: Languages.of(context).labelRemove,
+                      value: "Remove"
+                    ),
+                    if (enableSaveToFavorites)
+                    FlexiblePopupItem(
+                      title: Languages.of(context).labelAddToFavorites,
+                      value: "AddFavorites"
+                    ),
+                    if (enableSaveToWatchLater)
+                    FlexiblePopupItem(
+                      title: Languages.of(context).labelAddToWatchLater,
+                      value: "AddWatchLater"
+                    )
                   ],
                   onItemTap: (String value) async {
                     switch(value) {
@@ -272,7 +294,7 @@ class VideoTile extends StatelessWidget {
                               : "https://www.youtube.com/playlist?list=${searchItem.PlaylistId.value}"
                         );
                         break;
-                      case "Copy Link":
+                      case "CopyLink":
                         String link = searchItem is Video
                           ? "https://www.youtube.com/watch?v=${searchItem.id.value}"
                           : searchItem is SearchVideo
@@ -320,7 +342,7 @@ class VideoTile extends StatelessWidget {
                       case "Remove":
                         onDelete();
                         break;
-                      case "Add to Favorites":
+                      case "AddFavorites":
                         Video videoToSave;
                         if (searchItem is SearchVideo) {
                           showDialog(
@@ -346,7 +368,7 @@ class VideoTile extends StatelessWidget {
                           scaffoldKey: Scaffold.of(context)
                         );
                         break;
-                      case "Add to Watch Later":
+                      case "AddWatchLater":
                         Video videoToSave;
                         if (searchItem is SearchVideo) {
                           showDialog(

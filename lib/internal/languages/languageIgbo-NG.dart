@@ -51,6 +51,22 @@ class LanguageIgbo extends Languages {
   String get labelDownloadAll => "Budata Ha niile";
   @override 
   String get labelLoadingVideos => "Na-adọnye vidiyo...";
+  @override
+  String get labelHomePage => "Peeji mbụ";
+  @override
+  String get labelTrending => "Na-achọ";
+  @override
+  String get labelFavorites => "Ọkacha mmasị";
+  @override
+  String get labelWatchLater => "Lelee Mgbe Emechara";
+
+  // Video Options Menu
+  @override
+  String get labelCopyLink => "Detuo njikọ";
+  @override
+  String get labelAddToFavorites => "Tinye ka ọkacha mmasị";
+  @override
+  String get labelAddToWatchLater => "Tinye na Nlele Mgbe Emechara";
 
   // Downloads Screen
   @override
@@ -235,6 +251,56 @@ class LanguageIgbo extends Languages {
     "Enwere ike ịnweta ikikere faịlụ, nke a ga-abụ nke oge na-achọghị " +
     "na mmelite n'ọdịnihu. I nwekwara ike itinye ndozi a na Ntọala.";
 
+  // Music Player
+  @override
+  String get labelPlayerSettings => "Egwuregwu Onye egwu";
+  @override
+  String get labelExpandArtwork => "Gbasaa Nka";
+  @override
+  String get labelArtworkRoundedCorners => "Nka gbara gburugburu Nkuku";
+  @override
+  String get labelPlayingFrom => "Na-egwu Site";
+  @override
+  String get labelBlurBackground => "Blur okirikiri";
+
+  // Video Page
+  @override
+  String get labelTags => "Mkpado";
+  @override
+  String get labelRelated => "Njikọ";
+  @override
+  String get labelAutoPlay => "AutoPlay";
+
+  // Tags Pages
+  @override
+  String get labelAudioFormatNotCompatible =>
+    "Ọdịdị ọdịyo adabaghị";
+  @override
+  String get labelNotSpecified => "Akọwapụtaghị ya";
+  @override
+  String get labelPerformAutomaticTagging => 
+    "Mee Akpado Akpado";
+  @override
+  String get labelSelectTagsfromMusicBrainz => 
+    "Họrọ mkpado site na MusicBrainz";
+  @override
+  String get labelSelectArtworkFromDevice =>
+    "Họrọ Nka na Ngwaọrụ";
+
+  // Telegram Join Channel Dialog
+  @override
+  String get labelJoinTelegramChannel => "Jikọọ na Channel Telegram!";
+  @override
+  String get labelJoinTelegramJustification =>
+    "Tube na-amasị SongTube? Biko sonye na Telegram Channel! Will ga-achọta " +
+    "Mmelite, Ozi, Mmepe, Njikọ Njikọ na njikọta mmekọrịta ndị ọzọ." +
+    "\n\n" +
+    "Ọ bụrụ na ị nwere nsogbu ma ọ bụ nnukwu nkwụghachi ụgwọ n'uche gị, " +
+    "biko sonye na Otu si na Channel ma dee ya! Ma buru n'uche " +
+    "ị ga - asụ bekee naanị, daalụ!";
+  @override
+  String get labelRemindLater => "Chetara Mgbe Emechara";
+
   // Common Words (One word labels)
   @override
   String get labelExit => "Ụzọ ọpụpụ";
@@ -272,5 +338,12 @@ class LanguageIgbo extends Languages {
   String get labelCleaning => "Nhicha";
   @override
   String get labelCancel => "Kagbuo";
-
+  @override
+  String get labelGeneral => "General";
+  @override
+  String get labelRemove => "Iwepụ";
+  @override
+  String get labelJoin => "Jikọọ";
+  @override
+  String get labelNo => "Mba";
 }
