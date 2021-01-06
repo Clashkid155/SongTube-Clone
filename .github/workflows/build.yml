@@ -36,6 +36,15 @@ jobs:
       - name: Get lastest tag
         id: tagg
         run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+
+      - name: Get current time
+        uses: 1466587594/get-current-time@v2
+        id: ctime
+        with:
+          format: YYYYMMDD-HH
+          utcOffset: "+01:00"
+        env:
+          TIME: -${{ steps.ctime.outputs.formattedTime }}
      
       # Parse changelog
       - name: Changelog
@@ -65,24 +74,25 @@ jobs:
 
        #Create release note
       - name: Create release note
+        #if: startsWith(github.ref, 'refs/tags') check if its a tag
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.tagg.outputs.tag }}
-          release_name: SongTube ${{ github.ref }}
+          tag_name: ${{ steps.tagg.outputs.tag }}${{ env.TIME }}
+          release_name: SongTube ${{ github.ref }}${{ env.TIME }}
           body: |
               ${{ steps.chan.outputs.BODY }}
  
      
-      #Upload
+      #Upload split release
       - name: Upload split to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: build/app/outputs/apk/release/SongTube*
-          tag: ${{ steps.tagg.outputs.tag }}
+          tag: ${{ steps.tagg.outputs.tag }}${{ env.TIME }
             #overwrite: true
             #release_name:  SongTube ${{ steps.tagg.outputs.tag }} 
           file_glob: true
