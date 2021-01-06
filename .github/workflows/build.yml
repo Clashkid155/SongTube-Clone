@@ -64,7 +64,22 @@ jobs:
            echo "::set-output name=BODY::$BODY"
         #echo "::set-output name=BODY::$(python3 changeprase.py)"
            #python3 changeprase.py
-      
+
+
+        #Create release note
+      - name: Create release note
+        #if: startsWith(github.ref, 'refs/tags') check if its a tag
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.tagg.outputs.tag }} $TIME
+          release_name: SongTube ${{ github.ref }} $TIME
+          body: |
+              ${{ steps.chan.outputs.BODY }}
+ 
+
         
        # Flutter stuffs  
       - uses: subosito/flutter-action@v1
@@ -76,27 +91,14 @@ jobs:
       - name: Build Apk per abi
         run: flutter build apk --split-per-abi
 
-       #Create release note
-      - name: Create release note
-        #if: startsWith(github.ref, 'refs/tags') check if its a tag
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ steps.tagg.outputs.tag }}${{ env.TIME }}
-          release_name: SongTube ${{ github.ref }}${{ env.TIME }}
-          body: |
-              ${{ steps.chan.outputs.BODY }}
- 
-     
+          
       #Upload split release
       - name: Upload split to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: build/app/outputs/apk/release/SongTube*
-          tag: ${{ steps.tagg.outputs.tag }}${{ env.TIME }}
+          tag: ${{ steps.tagg.outputs.tag }} ${{ env.TIME }}
             #overwrite: true
             #release_name:  SongTube ${{ steps.tagg.outputs.tag }} 
           file_glob: true
