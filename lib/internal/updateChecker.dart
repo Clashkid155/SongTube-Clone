@@ -7,17 +7,20 @@ Future<UpdateDetails> getLatestRelease() async {
     var client = http.Client();
     var headers = {
       "Accept": "application/vnd.github.v3+json",
- };
+    };
     var response = await client.get(
-        "https://api.github.com/repos/SongTube/SongTube-App/releases",
+        "https://api.github.com/repos/Clashkid155/SongTube-Clone/releases",
         headers: headers);
     var jsonResponse = jsonDecode(response.body);
-    UpdateDetails details = UpdateDetails(
-        double.parse(jsonResponse[0]["tag_name"]
-            .split("+")
+    /* For SongTube Main
+    double.parse(jsonResponse[0]["tag_name"]
+              .split("+")
             .first
             .trim()
-            .replaceRange(3, 5, "")),
+            .replaceRange(3, 5, "")
+            ),*/
+    UpdateDetails details = UpdateDetails(
+        5.3,
         jsonResponse[0]["published_at"].split("T").first,
         jsonResponse[0]["body"],
         jsonResponse[0]["assets"][0]["browser_download_url"],
