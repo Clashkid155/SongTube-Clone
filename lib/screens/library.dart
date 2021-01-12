@@ -23,7 +23,7 @@ class LibraryScreen extends StatelessWidget {
     ConfigurationProvider config = Provider.of<ConfigurationProvider>(context);
     return Scaffold(
       body: ListView(
-        physics: BouncingScrollPhysics(),
+        
         children: <Widget>[
           // SongTube Banner
           SongTubeBanner(

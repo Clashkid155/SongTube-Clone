@@ -77,7 +77,7 @@ class AppUpdateDialog extends StatelessWidget {
         ],
       ),
       content: SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
+        
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [MarkdownBody(data: details.updateDetails)],

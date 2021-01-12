@@ -49,7 +49,6 @@ class YoutubeChannelPage extends StatelessWidget {
               backgroundColor: Colors.transparent),
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           body: SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
             child: Column(
               children: [
                 AspectRatio(
@@ -99,7 +98,7 @@ class YoutubeChannelPage extends StatelessWidget {
                         duration: Duration(milliseconds: 300),
                         child: snapshot.hasData
                             ? RelatedVideosList(
-                                relatedVideos: videos,
+                                related: videos,
                                 onVideoTap: (index) {
                                   Navigator.pop(context);
                                   manager.updateMediaInfoSet(
